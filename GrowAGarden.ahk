@@ -6,9 +6,11 @@ global IsCollectCropsTimerOn := false
 global IsAutoSeedTimerOn := false
 global IsAntiAfkTimerOn := false
 
-Gui, Show, w500 h100, Grow a Garden v1.0.0
+Gui, Show, w500 h150, Grow a Garden v1.0.1.1
 Gui, Color, Black
-Gui, Font, cWhite s8, Segoe UI
+Gui, Add, GroupBox, w480 h145 x10 y-4
+Gui, Font,cWhite s8, Segoe UI
+
 Gui, Add, Checkbox, x20 y10 vChecked gCheckedG, Autoclick E (Make sure this off while autofarm)
 Gui, Add, Checkbox, x20 y40 vCheckedSell gCheckedSellG, AutoSell
 Gui, Add, Checkbox, x20 y70 vCheckedAutoFarm gAutoFarm, AutoFarm
@@ -72,6 +74,7 @@ Sleep, 1000
 Click, Left
 Sleep, 300
 
+Gui, Submit, NoHide
 if (CheckedAutoFarm)
     CustomTimer("CollectCrops", 100, true)
 if (Checked)
@@ -235,6 +238,7 @@ MouseMove, 954, 146, 3
 Sleep, 100
 Click, Left
 Sleep, 100
+Gui, Submit, NoHide
 if (CheckedAutoFarm)
     CustomTimer("CollectCrops", 100, true)
 if (CheckedSell)
