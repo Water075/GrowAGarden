@@ -195,7 +195,7 @@ MouseMove, 722, 421, 3
 Sleep, 100
 Click, Left
 Sleep, 100
-MouseMove, 738, 812, 3
+MouseMove, 738, 818, 3
 Sleep, 100
 Click, Left, 3
 Sleep, 100
