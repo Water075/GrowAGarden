@@ -1,12 +1,16 @@
 #SingleInstance, Force
 
-global IsPressETimerOn := false
-global IsSellInvTimerOn := false
-global IsCollectCropsTimerOn := false
-global IsAutoSeedTimerOn := false
-global IsAntiAfkTimerOn := false
+global IsPressEOn := false
+global IsSellInvOn := false
+global IsCollectCropsOn := false
+global IsAutoSeedOn := false
+global IsAntiAfkOn := false
+global IsScanForWeatherOn := false
 
-Gui, Show, w500 h150, Grow a Garden v1.0.1.1
+configFile := A_ScriptDir . "\WebhookConfig.ini"
+IniRead, URL, %configFile%, WebHook, URL
+
+Gui, Show, w500 h150, Grow a Garden v1.0.1.2
 Gui, Color, Black
 Gui, Add, GroupBox, w480 h145 x10 y-4
 Gui, Font,cWhite s8, Segoe UI
@@ -16,13 +20,171 @@ Gui, Add, Checkbox, x20 y40 vCheckedSell gCheckedSellG, AutoSell
 Gui, Add, Checkbox, x20 y70 vCheckedAutoFarm gAutoFarm, AutoFarm
 Gui, Add, Checkbox, x90 y40 vCheckedAutoSeedCollect gAutoSeed, AutoBuySeeds
 Gui, Add, Checkbox, x95 y70 vAntiAfkChecked gAntiAfk, AntiAfk (Use this to afk Rainy, Snowy, Disco, etc)
-Gui, Add, Text, x300 y10, This Script is in Beta, Made by Water
+Gui, Add, Checkbox, x20 y100 vCheckForWeather gWeathercb, WeatherWebhook
+Gui, Add, Button, x415 y10 gSC, SetCamera
+
 Gui, +AlwaysOnTop
 Return
 
+;SetCamera
+SC:
+WinActivate, ahk_exe RobloxPlayerBeta.exe
+Sleep, 20
+Send {Left down}
+Sleep, 475
+Send {Left up}
+Return
+;Weather Webhooks
+WHookRain:
+webhookURL := URL
+
+if (webhookURL = "") {
+    MsgBox, 48, GrowAGarden 1.0.1.2, No valid URL 
+    Return
+}
+
+FormatTime, currentTime,, yyyy-MM-dd HH:mm:ss
+
+jsonData :=
+(
+"
+{
+  ""embeds"": [
+    {
+      ""title"": ""GrowAGarden 1.0.1.2"",
+      ""description"": ""Weather"",
+      ""color"": 3447003,
+      ""fields"": [
+        {
+          ""name"": ""Current Weather"",
+          ""value"": ""Rain"",
+          ""inline"": true
+        },
+        {
+          ""name"": """",
+          ""value"": """",
+          ""inline"": true
+        },
+        {
+          ""name"": ""Current Time"",
+          ""value"": """ currentTime """,
+          ""inline"": true
+        }
+      ]
+    }
+  ]
+}
+"
+)
+
+http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+http.Open("POST", webhookURL, false)
+http.SetRequestHeader("Content-Type", "application/json")
+http.Send(jsonData)
+Return
+
+WHookThunder:
+webhookURL := URL
+
+if (webhookURL = "") {
+    MsgBox, 48, GrowAGarden 1.0.1.2, No valid URL 
+    Return
+}
+
+FormatTime, currentTime,, yyyy-MM-dd HH:mm:ss
+
+jsonData :=
+(
+"
+{
+  ""embeds"": [
+    {
+      ""title"": ""GrowAGarden 1.0.1.2"",
+      ""description"": ""Weather"",
+      ""color"": 255255155,
+      ""fields"": [
+        {
+          ""name"": ""Current Weather"",
+          ""value"": ""Thunder"",
+          ""inline"": true
+        },
+        {
+          ""name"": """",
+          ""value"": """",
+          ""inline"": true
+        },
+        {
+          ""name"": ""Current Time"",
+          ""value"": """ currentTime """,
+          ""inline"": true
+        }
+      ]
+    }
+  ]
+}
+"
+)
+
+http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+http.Open("POST", webhookURL, false)
+http.SetRequestHeader("Content-Type", "application/json")
+http.Send(jsonData)
+Return
+
+WHookFrost:
+webhookURL := URL
+
+if (webhookURL = "") {
+    MsgBox, 48, GrowAGarden 1.0.1.2, No valid URL 
+    Return
+}
+
+FormatTime, currentTime,, yyyy-MM-dd HH:mm:ss
+
+jsonData :=
+(
+"
+{
+  ""embeds"": [
+    {
+      ""title"": ""GrowAGarden 1.0.1.2"",
+      ""description"": ""Weather"",
+      ""color"": 3447003,
+      ""fields"": [
+        {
+          ""name"": ""Current Weather"",
+          ""value"": ""Frost"",
+          ""inline"": true
+        },
+        {
+          ""name"": """",
+          ""value"": """",
+          ""inline"": true
+        },
+        {
+          ""name"": ""Current Time"",
+          ""value"": """ currentTime """,
+          ""inline"": true
+        }
+      ]
+    }
+  ]
+}
+"
+)
+
+http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+http.Open("POST", webhookURL, false)
+http.SetRequestHeader("Content-Type", "application/json")
+http.Send(jsonData)
+Return
+;
+
 CustomTimer(TimerName, Period, On := true) {
-    global IsPressETimerOn, IsSellInvTimerOn, IsCollectCropsTimerOn, IsAutoSeedTimerOn, IsAntiAfkTimerOn
-    stateVar := "Is" . TimerName . "TimerOn"
+    global
+    stateVar := "Is" . TimerName . "On"
+    if !IsSet(stateVar)
+        return
     currentState := %stateVar%
     if (On && !currentState) {
         SetTimer, %TimerName%, %Period%
@@ -182,7 +344,7 @@ Send, {WheelDown 1000}
 Sleep, 100
 Click, Left
 Sleep, 100
-MouseMove, 703, 829, 3
+MouseMove, 773, 861, 3
 Sleep, 100
 Click, Left, 3
 Sleep, 100
@@ -202,7 +364,7 @@ MouseMove, 738, 818, 3
 Sleep, 100
 Click, Left, 3
 Sleep, 100
-MouseMove, 721 ,416, 3
+MouseMove, 721, 416, 3
 Sleep, 100
 Click, Left
 Sleep, 100
@@ -253,7 +415,79 @@ CustomTimer("AntiAfkFunc", 900000, AntiAfkChecked)
 Return
 
 AntiAfkFunc:
+WinActivate, ahk_exe RobloxPlayerBeta.exe
+Sleep, 100
 Click, Right
+Return
+
+Weathercb:
+Gui, Submit, NoHide
+CustomTimer("ScanForWeather", 60000, CheckForWeather)
+Return
+
+ScanForWeather:
+WinActivate, ahk_exe RobloxPlayerBeta.exe
+Sleep, 100
+Gosub, Rain
+Gosub, Thunder
+Gosub, Frost
+Return
+
+Rain:
+CoordMode, Pixel, Window
+
+x := 1897
+y := 1021
+
+targetColor := 0x00AAFF
+
+PixelGetColor, color, %x%, %y%, RGB
+
+if (color = targetColor)
+{
+    Gosub, WHookRain
+}
+else
+{
+}
+Return
+
+Thunder:
+CoordMode, Pixel, Window
+
+x := 1895
+y := 1012
+
+targetColor := 0xFFFF7F
+
+PixelGetColor, color, %x%, %y%, RGB
+
+if (color = targetColor)
+{
+    Gosub, WHookThunder
+}
+else
+{
+}
+Return
+
+Frost:
+CoordMode, Pixel, Window
+
+x := 1896
+y := 1016
+
+targetColor := 0xAAD6DA
+
+PixelGetColor, color, %x%, %y%, RGB
+
+if (color = targetColor)
+{
+    Gosub, WHookFrost
+}
+else
+{
+}
 Return
 
 GuiClose:
