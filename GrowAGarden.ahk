@@ -474,10 +474,10 @@ Return
 Frost:
 CoordMode, Pixel, Window
 
-x := 1896
-y := 1016
+x := 1899
+y := 1018
 
-targetColor := 0xAAD6DA
+targetColor := 0x7BE9FF
 
 PixelGetColor, color, %x%, %y%, RGB
 
